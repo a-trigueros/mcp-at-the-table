@@ -6,7 +6,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 
 
 // Send requests to the MCP
-const buildMcpPostHandler = (server: McpServer) =>
+const buildMcpPostHandler = (buildServer: () => McpServer) =>
   async (req: Request, res: Response) => {
     const sessionId = getSessionId(req);
     let transport: StreamableHTTPServerTransport | null = null;
@@ -15,7 +15,7 @@ const buildMcpPostHandler = (server: McpServer) =>
     if (hasTransport(sessionId)) {
       transport = getTransport(sessionId!);
     } else if (isInitializeRequest(req)) {
-      transport = await buildTransport(server)
+      transport = await buildTransport(buildServer)
     }
 
     if (!transport) {
@@ -101,8 +101,8 @@ process.on('SIGINT', async () => {
 });
 
 
-export function configureMcpRoutes(app: Express, server: McpServer) {
-  app.post("/mcp", buildMcpPostHandler(server));
+export function configureMcpRoutes(app: Express, buildServer: () => McpServer) {
+  app.post("/mcp", buildMcpPostHandler(buildServer));
   app.get("/mcp", mcpGetHandler);
   app.delete("/mcp", mcpDeleteHandler);
 }

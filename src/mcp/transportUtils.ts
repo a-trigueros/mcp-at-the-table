@@ -14,7 +14,7 @@ export function getTransport(sessionId: string) {
   return transports[sessionId]!;
 }
 
-export async function buildTransport(server: McpServer) {
+export async function buildTransport(buildServer: () => McpServer) {
 
   const eventStore = new InMemoryEventStore();
 
@@ -37,7 +37,7 @@ export async function buildTransport(server: McpServer) {
   }
 
 
-  await server.connect(transport as Transport);
+  await buildServer().connect(transport as Transport);
 
   return transport;
 }

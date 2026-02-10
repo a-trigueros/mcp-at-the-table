@@ -1,7 +1,7 @@
 import express, { type Request, type Response } from "express";
 import cors from "cors";
 import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
-import { server } from "./mcp/server.ts"
+import { buildServer } from "./mcp/server.ts"
 import { configureMcpRoutes } from "./mcp/http.ts";
 
 
@@ -11,7 +11,7 @@ const app = createMcpExpressApp();
 app.use(express.json());
 
 app.use(cors());
-configureMcpRoutes(app, server);
+configureMcpRoutes(app, buildServer);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
