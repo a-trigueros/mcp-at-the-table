@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { InMemoryTaskMessageQueue, InMemoryTaskStore } from "@modelcontextprotocol/sdk/experimental/index.js";
 import { type CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import z from "zod";
+import { getAvailableFood } from "../fridge/functions.ts";
 
 const taskStore = new InMemoryTaskStore();
 
@@ -17,8 +18,6 @@ export const buildServer = () => {
     },
     {
       capabilities: { logging: {}, tasks: { requests: { tools: { call: {} } } } },
-      // capabilities: { logging: {} },
-      taskStore, // Enable task support
       taskMessageQueue: new InMemoryTaskMessageQueue()
     }
   );
@@ -42,6 +41,28 @@ export const buildServer = () => {
             text: `Hello, ${name}!`
           }
         ]
+      };
+    }
+  );
+
+  server.registerResource(
+    "list available food",
+    "fridge://food",
+    {
+      title: "List available food",
+      description: "List available food in the fridge as well as their expiration date",
+      mimeType: "application/json"
+    },
+    async () => {
+
+      var food = await getAvailableFood();
+
+      return {
+        contents: [{
+          uri: "fridge://food",
+          type: "text",
+          text: JSON.stringify(food)
+        }]
       };
     }
   );

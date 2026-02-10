@@ -1,0 +1,18 @@
+{
+  "food": [
+    {
+      "name": "Oeuf",
+      "quantity": 12
+    },
+    {
+      "name": "Farine",
+      "quantity": 1,
+      "unit": "Kilogramme"
+    },
+    {
+      "name": "Chololat Patissier",
+      "quantity": 250,
+      "unit": "Gramme"
+    }
+  ]
+}
