@@ -1,10 +1,10 @@
-export type Quantity = {
-  value: number;
-  unit: string;
+export type FoodToAdd = {
+  name: string;
+  quantity: number;
+  unit: string | undefined;
+  expiresAt?: Date | undefined;
 }
 
-export type Food = {
-  name: string;
-  quantity: Quantity;
-  expiresAt: Date;
+export type Food = FoodToAdd & {
+  id: string;
 }

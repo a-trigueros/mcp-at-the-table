@@ -1,11 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { InMemoryTaskMessageQueue, InMemoryTaskStore } from "@modelcontextprotocol/sdk/experimental/index.js";
-import { type CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import z from "zod";
-import { getAvailableFood } from "../fridge/functions.ts";
+import { getAvailableFood, addFood } from "../fridge/functions.ts";
+
 
 const taskStore = new InMemoryTaskStore();
-
 
 export const buildServer = () => {
   const server = new McpServer(
@@ -18,32 +17,35 @@ export const buildServer = () => {
     },
     {
       capabilities: { logging: {}, tasks: { requests: { tools: { call: {} } } } },
+      taskStore,
       taskMessageQueue: new InMemoryTaskMessageQueue()
     }
   );
 
-
-  // Register a simple tool that returns a greeting
-  server.registerTool(
-    'greet',
-    {
-      title: 'Greeting Tool', // Display name for UI
-      description: 'A simple greeting tool',
-      inputSchema: {
-        name: z.string().describe('Name to greet')
-      }
-    },
-    async ({ name }): Promise<CallToolResult> => {
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Hello, ${name}!`
-          }
-        ]
-      };
+  server.registerTool('addFood', {
+    title: "Add food",
+    description: 'Add food to the fridge and make it available to the fridge://food resource',
+    inputSchema: z.object({
+      name: z.string(),
+      quantity: z.number(),
+      unit: z.string().optional(),
+      expiresAt: z.string().pipe(z.coerce.date()).optional()
+    })
+  }, async ({ name, quantity, unit, expiresAt }) => {
+    await addFood({
+      name,
+      quantity,
+      unit,
+      expiresAt
+    });
+    return {
+      content: [{
+        type: "text",
+        text: `Added ${quantity} ${unit} of ${name} to the fridge`
+      }]
     }
-  );
+  });
+
 
   server.registerResource(
     "list available food",
