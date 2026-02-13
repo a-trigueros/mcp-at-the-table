@@ -1,7 +1,7 @@
 export type FoodToAdd = {
   name: string;
   quantity: number;
-  unit: string | undefined;
+  unit?: string | undefined;
   expiresAt?: Date | undefined;
 }
 
