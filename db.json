@@ -1,18 +1,15 @@
 {
   "food": [
     {
+      "id": "70773040-506d-4dec-8fa7-1b6238394ea4",
       "name": "Oeuf",
       "quantity": 12
     },
     {
+      "id": "42c67b81-23ac-4bae-af15-006479ed3fd5",
       "name": "Farine",
       "quantity": 1,
       "unit": "Kilogramme"
-    },
-    {
-      "name": "Chololat Patissier",
-      "quantity": 250,
-      "unit": "Gramme"
     }
   ]
 }
