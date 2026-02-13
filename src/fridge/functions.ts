@@ -20,5 +20,19 @@ export async function addFood(item: FoodToAdd) {
   const db = await JSONFilePreset("db.json", defaultData);
   db.update(data => data.food.push(food))
   await db.write();
+  return food;
+}
+
+export function toHumanReadeableText(food: Food) {
+  let text = `${food.quantity}`;
+  if (food.unit) {
+    text = `${text} ${food.unit} of`;
+  }
+  text = `${text} ${food.name}`;
+
+  if (food.expiresAt) {
+    text = `${text} that expires at ${food.expiresAt}`;
+  }
+  return `${text} identified by ${food.id}`;
 }
 

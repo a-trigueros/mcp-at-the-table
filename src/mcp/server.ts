@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { InMemoryTaskMessageQueue, InMemoryTaskStore } from "@modelcontextprotocol/sdk/experimental/index.js";
 import z from "zod";
-import { getAvailableFood, addFood } from "../fridge/functions.ts";
+import { getAvailableFood, addFood, toHumanReadeableText } from "../fridge/functions.ts";
 
 
 const taskStore = new InMemoryTaskStore();
@@ -32,7 +32,7 @@ export const buildServer = () => {
       expiresAt: z.string().pipe(z.coerce.date()).optional()
     })
   }, async ({ name, quantity, unit, expiresAt }) => {
-    await addFood({
+    let food = await addFood({
       name,
       quantity,
       unit,
@@ -41,7 +41,7 @@ export const buildServer = () => {
     return {
       content: [{
         type: "text",
-        text: `Added ${quantity} ${unit} of ${name} to the fridge`
+        text: `Added ${toHumanReadeableText(food)}`
       }]
     }
   });
@@ -53,7 +53,7 @@ export const buildServer = () => {
     {
       title: "List available food",
       description: "List available food in the fridge as well as their expiration date",
-      mimeType: "application/json"
+      mimeType: "text"
     },
     async () => {
 
@@ -63,7 +63,7 @@ export const buildServer = () => {
         contents: [{
           uri: "fridge://food",
           type: "text",
-          text: JSON.stringify(food)
+          text: food.map(item => `- ${toHumanReadeableText(item)}`).join("\n")
         }]
       };
     }
@@ -71,3 +71,4 @@ export const buildServer = () => {
 
   return server;
 }
+
