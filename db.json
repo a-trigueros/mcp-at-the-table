@@ -13,12 +13,6 @@
       "unit": "Kilogramme"
     },
     {
-      "id": "0e7347b9-9f4c-4ad3-8e2a-0c4e29dea58c",
-      "name": "Lait entier",
-      "quantity": 1,
-      "unit": "litre"
-    },
-    {
       "id": "0205f933-c3f0-4718-9d58-2be731344274",
       "name": "Crème fraîche entière",
       "quantity": 200,
@@ -47,6 +41,12 @@
       "name": "Extrait de vanille",
       "quantity": 1,
       "unit": "bouteille"
+    },
+    {
+      "id": "03b1324f-a8aa-44e2-8c3b-5960f818884e",
+      "name": "Viande hachée",
+      "quantity": 400,
+      "unit": "g"
     }
   ]
 }

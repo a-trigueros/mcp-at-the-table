@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { InMemoryTaskMessageQueue, InMemoryTaskStore } from "@modelcontextprotocol/sdk/experimental/index.js";
 import z from "zod";
-import { getAvailableFood, addFood, toHumanReadeableText, updateFood } from "../fridge/functions.ts";
+import { getAvailableFood, addFood, toHumanReadeableText, updateFood, removeFood } from "../fridge/functions.ts";
 
 
 const taskStore = new InMemoryTaskStore();
@@ -32,7 +32,7 @@ export const buildServer = () => {
       expiresAt: z.string().pipe(z.coerce.date()).optional()
     })
   }, async ({ name, quantity, unit, expiresAt }) => {
-    let food = await addFood({
+    const result = await addFood({
       name,
       quantity,
       unit,
@@ -41,7 +41,7 @@ export const buildServer = () => {
     return {
       content: [{
         type: "text",
-        text: `Added ${toHumanReadeableText(food)}`
+        text: result
       }]
     }
   });
@@ -56,16 +56,32 @@ export const buildServer = () => {
       expiresAt: z.string().pipe(z.coerce.date()).optional()
     })
   }, async (item) => {
-    var result = await updateFood(item);
+    const result = await updateFood(item);
 
     return {
       content: [{
         type: "text",
-        text: `Set Food with id ${item.id} to ${toHumanReadeableText(result)}`
+        text: result
       }]
     }
   });
 
+  server.registerTool("removeFood", {
+    title: "Remove food",
+    description: "Remove food with a given id from the fridge",
+    inputSchema: z.object({
+      id: z.uuid(),
+    })
+  }, async (item) => {
+    const result = await removeFood(item);
+
+    return {
+      content: [{
+        type: "text",
+        text: result
+      }]
+    }
+  });
 
   server.registerResource(
     "list available food",
