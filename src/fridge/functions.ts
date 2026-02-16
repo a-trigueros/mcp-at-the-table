@@ -1,5 +1,5 @@
 import { JSONFilePreset } from 'lowdb/node';
-import { type Food, type FoodToAdd } from './food.ts';
+import { type Food, type FoodToAdd, type FoodToUpdate } from './food.ts';
 import { randomUUID } from "crypto";
 
 type Data = {
@@ -21,6 +21,30 @@ export async function addFood(item: FoodToAdd) {
   db.update(data => data.food.push(food))
   await db.write();
   return food;
+}
+
+export async function updateFood(item: FoodToUpdate) {
+  const db = await JSONFilePreset("db.json", defaultData);
+
+  let foodName = "";
+  db.update(data => {
+    var food = data.food.find(x => x.id === item.id);
+    if (food) {
+      food.unit = item.unit;
+      food.quantity = item.quantity;
+      food.expiresAt = item.expiresAt;
+      foodName = food.name;
+    } else {
+      throw new Error("Food not found");
+    }
+  })
+
+  await db.write();
+
+  return {
+    name: foodName,
+    ...item
+  };
 }
 
 export function toHumanReadeableText(food: Food) {

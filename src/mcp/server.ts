@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { InMemoryTaskMessageQueue, InMemoryTaskStore } from "@modelcontextprotocol/sdk/experimental/index.js";
 import z from "zod";
-import { getAvailableFood, addFood, toHumanReadeableText } from "../fridge/functions.ts";
+import { getAvailableFood, addFood, toHumanReadeableText, updateFood } from "../fridge/functions.ts";
 
 
 const taskStore = new InMemoryTaskStore();
@@ -42,6 +42,26 @@ export const buildServer = () => {
       content: [{
         type: "text",
         text: `Added ${toHumanReadeableText(food)}`
+      }]
+    }
+  });
+
+  server.registerTool("updateFood", {
+    title: "Update food",
+    description: "Update food, set new unit, quantity, and expiration date for a given identifier",
+    inputSchema: z.object({
+      id: z.uuid(),
+      quantity: z.number(),
+      unit: z.string().optional(),
+      expiresAt: z.string().pipe(z.coerce.date()).optional()
+    })
+  }, async (item) => {
+    var result = await updateFood(item);
+
+    return {
+      content: [{
+        type: "text",
+        text: `Set Food with id ${item.id} to ${toHumanReadeableText(result)}`
       }]
     }
   });

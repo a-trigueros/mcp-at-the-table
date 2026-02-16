@@ -3,13 +3,50 @@
     {
       "id": "70773040-506d-4dec-8fa7-1b6238394ea4",
       "name": "Oeuf",
-      "quantity": 12
+      "quantity": 8,
+      "unit": "Oeuf"
     },
     {
       "id": "42c67b81-23ac-4bae-af15-006479ed3fd5",
       "name": "Farine",
       "quantity": 1,
       "unit": "Kilogramme"
+    },
+    {
+      "id": "0e7347b9-9f4c-4ad3-8e2a-0c4e29dea58c",
+      "name": "Lait entier",
+      "quantity": 1,
+      "unit": "litre"
+    },
+    {
+      "id": "0205f933-c3f0-4718-9d58-2be731344274",
+      "name": "Crème fraîche entière",
+      "quantity": 200,
+      "unit": "ml"
+    },
+    {
+      "id": "bf3e148b-b3aa-45a0-8a11-dd37fd8c9caf",
+      "name": "Sucre glace",
+      "quantity": 200,
+      "unit": "g"
+    },
+    {
+      "id": "e8f0f9d4-98d0-4d67-8add-ab541b9d347b",
+      "name": "Sucre semoule",
+      "quantity": 100,
+      "unit": "g"
+    },
+    {
+      "id": "754f0636-cbad-4417-b3a4-03eb4602c132",
+      "name": "Sucre en poudre",
+      "quantity": 100,
+      "unit": "g"
+    },
+    {
+      "id": "94131ab3-73d6-4584-9d96-2ce651e32fa9",
+      "name": "Extrait de vanille",
+      "quantity": 1,
+      "unit": "bouteille"
     }
   ]
 }
