@@ -1,7 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { InMemoryTaskMessageQueue, InMemoryTaskStore } from "@modelcontextprotocol/sdk/experimental/index.js";
 import z from "zod";
-import { getAvailableFood, addFood, toHumanReadeableText, updateFood, removeFood } from "../fridge/functions.ts";
+import { getAvailableFood, addFood, updateFood, removeFood } from "../fridge/functions.ts";
 
 
 const taskStore = new InMemoryTaskStore();
@@ -22,6 +22,34 @@ export const buildServer = () => {
     }
   );
 
+  async function askUserForExpirationDate(foodName: string) {
+    var response = await server.server.elicitInput({
+      mode: 'form',
+      message: `Please enter expiration date for ${foodName}`,
+      requestedSchema: {
+        type: "object",
+        properties: {
+          expiresAt: {
+            type: "string",
+            title: "Expiration date",
+            description: "Expiration date (yyyy-MM-dd)",
+          }
+        },
+        required: ["expiresAt"]
+      }
+    });
+
+    const expiresAtStr = response?.content?.expiresAt as string;
+    if (response.action === "accept"
+      && /\d{4}-\d{1,2}-\d{1,2}/.test(expiresAtStr)) {
+
+      const parsed = new Date(expiresAtStr);
+      return parsed;
+    }
+
+    return undefined;
+  }
+
   server.registerTool('addFood', {
     title: "Add food",
     description: 'Add food to the fridge and make it available to the fridge://food resource',
@@ -32,18 +60,20 @@ export const buildServer = () => {
       expiresAt: z.string().pipe(z.coerce.date()).optional()
     })
   }, async ({ name, quantity, unit, expiresAt }) => {
+
     const result = await addFood({
       name,
       quantity,
       unit,
       expiresAt
-    });
+    }, name => askUserForExpirationDate(name));
     return {
       content: [{
         type: "text",
         text: result
       }]
     }
+
   });
 
   server.registerTool("updateFood", {
@@ -56,7 +86,8 @@ export const buildServer = () => {
       expiresAt: z.string().pipe(z.coerce.date()).optional()
     })
   }, async (item) => {
-    const result = await updateFood(item);
+
+    const result = await updateFood(item, name => askUserForExpirationDate(name));
 
     return {
       content: [{
@@ -93,13 +124,13 @@ export const buildServer = () => {
     },
     async () => {
 
-      var food = await getAvailableFood();
+      var text = await getAvailableFood();
 
       return {
         contents: [{
           uri: "fridge://food",
           type: "text",
-          text: food.map(item => `- ${toHumanReadeableText(item)}`).join("\n")
+          text
         }]
       };
     }

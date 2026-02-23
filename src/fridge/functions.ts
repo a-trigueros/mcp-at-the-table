@@ -12,50 +12,54 @@ const defaultData: Data = {
 
 export async function getAvailableFood() {
   const db = await JSONFilePreset("db.json", defaultData);
-  return db.data.food;
+  return db.data.food.map(toHumanReadeableText).join("\n");
 }
 
-export async function addFood(item: FoodToAdd) {
+export async function addFood(item: FoodToAdd, askExpirationTouser: (name: string) => Promise<Date | undefined>) {
   const food: Food = { id: randomUUID(), ...item };
+
+  if (!food.expiresAt) {
+    food.expiresAt = await askExpirationTouser(food.name);
+  }
+
   const db = await JSONFilePreset("db.json", defaultData);
   db.update(data => data.food.push(food))
   await db.write();
   return `Added ${toHumanReadeableText(food)}`
 }
 
-export async function updateFood(item: FoodToUpdate) {
+export async function updateFood(item: FoodToUpdate, askUserExpirationDate: (name: string) => Promise<Date | undefined>) {
   if (item.quantity > 0) {
-    return updateFoodQuantity(item);
+    return updateFoodQuantity(item, askUserExpirationDate);
   }
 
   return removeFood(item);
 
 }
 
-async function updateFoodQuantity(item: FoodToUpdate) {
+async function updateFoodQuantity(item: FoodToUpdate, askUserExpirationDate: (name: string) => Promise<Date | undefined>) {
   const db = await JSONFilePreset("db.json", defaultData);
 
-  let foodName = "";
-  let wasUpdated = true;
-  db.update(data => {
-    var food = data.food.find(x => x.id === item.id);
-    if (food) {
+  const foodName = db.data.food.find(x => x.id === item.id)?.name;
+
+  if (foodName) {
+    if (!item.expiresAt) {
+      item.expiresAt = await askUserExpirationDate(foodName);
+    }
+
+    db.update(data => {
+      var food = data.food.find(x => x.id === item.id)!;
       food.unit = item.unit;
       food.quantity = item.quantity;
       food.expiresAt = item.expiresAt;
-      foodName = food.name;
-    } else {
-      wasUpdated = false
-    }
-  })
+    })
 
-  if (!wasUpdated) {
+    await db.write();
 
-    return `no food found with id ${item.id}`
+    return `Set food with id: ${item.id} to ${toHumanReadeableText({ name: foodName, ...item })}`
   }
 
-  await db.write();
-  return `Set food with id: ${item.id} to ${toHumanReadeableText({ name: foodName, ...item })}`
+  return `no food found with id ${item.id}`
 }
 
 export async function removeFood(item: FoodWithId) {
@@ -84,6 +88,7 @@ export function toHumanReadeableText(food: Food) {
   if (food.expiresAt) {
     text = `${text} that expires at ${food.expiresAt}`;
   }
-  return `${text} identified by ${food.id}`;
+  text = `${text} identified by ${food.id}`;
+  return text
 }
 
