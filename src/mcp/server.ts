@@ -136,6 +136,29 @@ export const buildServer = () => {
     }
   );
 
+  server.registerPrompt("Recipes", {
+    title: "recipes",
+    description: "Suggest recipes based upon fridge content",
+    argsSchema: {
+      content: z.string().describe("The content to include in the recipe")
+    }
+  }, ({ content }) => {
+    return {
+      messages: [{
+        role: "user",
+        content: {
+          type: "text",
+          text: `You're a chef specializing in zero-waste cooking.
+Create three recipes that can be made using only the contents of your fridge.
+Prioritize the ingredients that expire the soonest.
+If a basic ingredient is missing (salt, pepper, oil), assume it's available.
+Take into account the user input: ${content}`
+        }
+      }
+      ]
+    }
+  });
+
   return server;
 }
 
