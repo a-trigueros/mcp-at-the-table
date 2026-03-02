@@ -1,4 +1,4 @@
-import express, { type Request, type Response } from "express";
+import express from "express";
 import cors from "cors";
 import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
 import { buildServer } from "./mcp/server.ts"
