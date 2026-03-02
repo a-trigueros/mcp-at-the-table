@@ -1,0 +1,18 @@
+import express from "express";
+import cors from "cors";
+import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express.js";
+import { buildServer } from "./mcp/server.ts"
+import { configureMcpRoutes } from "./mcp/http.ts";
+
+
+const app = createMcpExpressApp();
+
+// JSON parser middleware must be added before MCP handlers
+app.use(express.json());
+
+app.use(cors());
+configureMcpRoutes(app, buildServer);
+
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
