@@ -20,6 +20,8 @@ defmodule PhoenixMcpWeb.Router do
     get "/", PageController, :home
   end
 
+  forward "/mcp", Hermes.Server.Transport.StreamableHTTP.Plug, server: PhoenixMcp.MCP.Server
+
   # Other scopes may use custom stacks.
   # scope "/api", PhoenixMcpWeb do
   #   pipe_through :api

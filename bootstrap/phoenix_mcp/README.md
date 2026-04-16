@@ -1,3 +1,31 @@
+# what is this
+
+It’s a  bootstrap demo server for mcp in elixir/phoenix
+
+# bootstrap
+
+install elixir and phoenix: https://hexdocs.pm/phoenix/swapping_databases.html#using-phx-new
+
+The project has been bootstraped using sqlite3 database.
+
+```sh
+mix deps.get
+mix phx.server
+# starts the server on localhost:4000
+
+# test it mith modelcontextprotocol/inspector
+ npx @modelcontextprotocol/inspector --transport http --server-url http://localhost:4000/mcp
+
+# register it into claude
+
+claude mcp  add --transport http phoenix_mcp http://localhost:4000/mcp
+
+# remove it
+claude mcp remove phoenix_mcp
+
+```
+
+
 # PhoenixMcp
 
 To start your Phoenix server:

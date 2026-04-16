@@ -14,8 +14,8 @@ defmodule PhoenixMcp.Application do
        repos: Application.fetch_env!(:phoenix_mcp, :ecto_repos), skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:phoenix_mcp, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: PhoenixMcp.PubSub},
-      # Start a worker by calling: PhoenixMcp.Worker.start_link(arg)
-      # {PhoenixMcp.Worker, arg},
+      Hermes.Server.Registry,
+      {PhoenixMcp.MCP.Server, transport: :streamable_http},
       # Start to serve requests, typically the last entry
       PhoenixMcpWeb.Endpoint
     ]
